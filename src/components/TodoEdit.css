@@ -1,0 +1,22 @@
+.todo-edit {
+  display: grid;
+}
+
+.edit-bread{
+  margin: 0px 0px 0px 10px;
+}
+
+.todo-edit-body {
+  display: grid;
+  gap: 20px;
+  margin: 10px 0px 10px 20px;
+}
+
+.dropdown {
+  margin-top: 10px;
+}
+
+.edit-btn button {
+  margin-right: 10px;
+  margin-bottom: 20px;
+}

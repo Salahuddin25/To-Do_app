@@ -1,0 +1,27 @@
+.todo-details {
+  display: grid;
+}
+
+.detail-bread {
+  margin: 0px 0px 0px 10px;
+}
+
+.todo-details-body {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0px 10px 20px;
+}
+
+.user {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.horizontal-line {
+  margin: 10px 0;
+}
+
+.view-btn button {
+  margin-bottom: 20px;
+}
