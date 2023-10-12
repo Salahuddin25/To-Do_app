@@ -12,21 +12,34 @@ function TodoEdit(props) {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState(''); 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
       .get(`https://jsonplaceholder.typicode.com/todos/${todoId}`)
-      .then((response) => setTodo(response.data))
-      .catch((error) => console.error(error));
-
-    axios
-      .get(`https://jsonplaceholder.typicode.com/users/${todo.userId}`)
       .then((response) => {
-        setUser(response.data);
+        setTodo(response.data);
+        // Move loading state update here to prevent premature reset.
+        setLoading(false);
       })
-      .catch((error) => console.error(error));
-      setLoading(false);
-  }, [todoId, todo.userId]);
+      .catch((todoError) => {
+        setError("No Data Found ");
+        setLoading(false);
+      });
+  }, [todoId]);
+  
+  useEffect(() => {
+    if (todo.userId) { // Check if userId is not null before making the call
+      axios
+        .get(`https://jsonplaceholder.typicode.com/users/${todo.userId}`)
+        .then((response) => setUser(response.data))
+        .catch((todoError) => {
+          setError("No Data Found ");
+          setLoading(false);
+        });
+    }
+  }, [todo.userId]);
+  
 
   useEffect(() => {
     setStatus(todo.completed ? 'completed' : 'incomplete');
@@ -71,8 +84,17 @@ function TodoEdit(props) {
       </div>
       <hr className="horizontal-line"></hr>
       {loading ? (
-      <Spinner label="Loading..." />
-    ) : (
+        <Spinner label="Loading..." />
+      ) : error ? (
+        <div className="error-message-edit">
+        <img 
+        src="https://static.thenounproject.com/png/4440902-200.png" 
+        alt="No Data Found Icon"
+        className="error-image-edit"
+      />
+        {error}
+        </div>
+      ) : (
       <div className='todo-edit-body'>
         <div>
           <Field label="Title" required>

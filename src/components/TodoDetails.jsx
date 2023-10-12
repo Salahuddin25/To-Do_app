@@ -9,7 +9,8 @@ function TodoDetails() {
   const { id } = useParams();
   const [todo, setTodo] = useState(null);
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     axios
@@ -22,10 +23,17 @@ function TodoDetails() {
             setUser(userResponse.data);
             setIsLoading(false);
           })
-          .catch((error) => console.error(error));
+          .catch((userError) => {
+            setError("User not found");
+            setIsLoading(false);
+          });
       })
-      .catch((error) => console.error(error));
+      .catch((todoError) => {
+        setError("No Data Found ");
+        setIsLoading(false);
+      });
   }, [id]);
+
 
   return (
     <div className="todo-details">
@@ -35,6 +43,15 @@ function TodoDetails() {
       <hr className="horizontal-line"></hr>
       {isLoading ? (
         <Spinner label="Loading..." />
+      ) : error ? (
+        <div className="error-message-view">
+        <img 
+        src="https://static.thenounproject.com/png/4440902-200.png" 
+        alt="No Data Found Icon"
+        className="error-image-view"
+      />
+        {error}
+        </div>
       ) : (
         <div className="todo-details-body">
           <div>

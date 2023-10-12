@@ -4,13 +4,7 @@ import { Link } from "react-router-dom";
 import { Dropdown } from "@fluentui/react";
 import {
   Button,
-  Toast,
-  ToastBody,
-  ToastTitle,
-  Toaster,
   Tooltip,
-  useId,
-  useToastController,
 } from "@fluentui/react-components";
 import {
   TableBody,
@@ -29,11 +23,13 @@ import {
   ChevronRightFilled,
   ChevronDoubleLeft20Filled,
   ChevronDoubleRight20Filled,
+  ArrowDown16Filled,
+  ArrowUp16Filled,
 } from "@fluentui/react-icons";
 import "./TodoList.css";
 import Breadcrumbs from "./Breadcrumbs";
 
-function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
+function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
   const [todos, setTodos] = useState([]);
   const [users, setUsers] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,18 +37,8 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
   const [isLoading, setIsLoading] = useState(true);
   const loadingDuration = 1300;
   const [filter, setFilter] = useState(null);
-  // const toasterId = useId("toaster");
-  // const { dispatchToast } = useToastController(toasterId);
-
-  // const showSuccessToast = () => {
-  //   dispatchToast(
-  //     <Toast position="top-end">
-  //       <ToastTitle action={<Link>Undo</Link>}>Todo Added</ToastTitle>
-  //       <ToastBody>Your todo has been successfully added!</ToastBody>
-  //     </Toast>,
-  //     { intent: "success" }
-  //   );
-  // };
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -91,10 +77,6 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
           setIsLoading(false);
         }, loadingDuration);
       });
-      // if (isTodoAdded) {
-      //   showSuccessToast();
-      //   setIsTodoAdded(false);
-      // }
   }, [setTodosData, isTodoAdded, setIsTodoAdded]);
 
   const filteredTodos = todosData.filter((todo) => {
@@ -168,33 +150,62 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-  const renderedTodos = filteredTodos
-    .slice(startIndex, endIndex)
-    .map((todo) => {
-      const userName = users[todo?.userId] || "Unknown User";
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
 
-      return (
-        <TableRow key={todo.id}>
-          <TableCell style={{ color: "#0070ac", textDecoration: "none" }}>
-            <Link to={`/todos/${todo.id}/view`}>{todo?.title}</Link>
-          </TableCell>
-          <TableCell>{userName}</TableCell>
-          <TableCell>{todo?.completed ? "Completed" : "Incomplete"}</TableCell>
-          <TableCell>
-            <Tooltip content={"View"}>
-              <Link to={`/todos/${todo?.id}/view`}>
-                <Button icon={<EyeRegular />} appearance="subtle" />
-              </Link>
-            </Tooltip>
-            <Tooltip content={"Edit"}>
-              <Link to={`/todos/${todo?.id}/edit`}>
-                <Button icon={<EditRegular />} appearance="subtle" />
-              </Link>
-            </Tooltip>
-          </TableCell>
-        </TableRow>
-      );
-    });
+  const handleFilterChange = (option) => {
+    setFilter(`${option.key}`);
+    setCurrentPage(1);
+  };
+
+  const sortedTodos = [...filteredTodos].sort((a, b) => {
+    let result = 0;
+
+    if (sortColumn === "title") {
+      result = a.title.localeCompare(b.title);
+    } else if (sortColumn === "user") {
+      const userA = users[a.userId] || "";
+      const userB = users[b.userId] || "";
+      result = userA.localeCompare(userB);
+    } else if (sortColumn === "status") {
+      result = a.completed === b.completed ? 0 : a.completed ? -1 : 1;
+    }
+
+    return sortDirection === "asc" ? result : -result;
+  });
+
+  const renderedTodos = sortedTodos.slice(startIndex, endIndex).map((todo) => {
+    const userName = users[todo?.userId] || "Unknown User";
+
+    return (
+      <TableRow key={todo.id}>
+        <TableCell style={{ color: "#0070ac", textDecoration: "none" }}>
+          <Link to={`/todos/${todo.id}/view`}>{todo?.title}</Link>
+        </TableCell>
+        <TableCell>{userName}</TableCell>
+        <TableCell>{todo?.completed ? "Completed" : "Incomplete"}</TableCell>
+        <TableCell>
+          <Tooltip content={"View"}>
+            <Link to={`/todos/${todo?.id}/view`}>
+              <Button icon={<EyeRegular />} appearance="subtle" />
+            </Link>
+          </Tooltip>
+          <Tooltip content={"Edit"}>
+            <Link to={`/todos/${todo?.id}/edit`}>
+              <Button icon={<EditRegular />} appearance="subtle" />
+            </Link>
+          </Tooltip>
+        </TableCell>
+      </TableRow>
+    );
+  });
 
   return (
     <div className="table">
@@ -207,7 +218,7 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
             <Dropdown
               placeholder="Status"
               selectedKey={filter}
-              onChange={(e, option) => setFilter(`${option.key}`)}
+              onChange={(e, option) => handleFilterChange(option)}
               options={[
                 { key: "all", text: "All" },
                 { key: "completed", text: "Completed" },
@@ -233,14 +244,53 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
             <Table aria-label="Default table">
               <TableHeader>
                 <TableRow>
-                  <TableHeaderCell>
+                  <TableHeaderCell
+                    onClick={() => handleSort("title")}
+                    style={{ cursor: "pointer" }}
+                    sortable={true}
+                  >
                     <b>Title</b>
+                    {sortColumn === "title" && (
+                      <span>
+                        {sortDirection === "asc" ? (
+                          <ArrowUp16Filled />
+                        ) : (
+                          <ArrowDown16Filled />
+                        )}
+                      </span>
+                    )}
                   </TableHeaderCell>
-                  <TableHeaderCell>
+                  <TableHeaderCell
+                    onClick={() => handleSort("user")}
+                    style={{ cursor: "pointer" }}
+                    sortable={true}
+                  >
                     <b>User</b>
+                    {sortColumn === "user" && (
+                      <span>
+                        {sortDirection === "asc" ? (
+                          <ArrowUp16Filled />
+                        ) : (
+                          <ArrowDown16Filled />
+                        )}
+                      </span>
+                    )}
                   </TableHeaderCell>
-                  <TableHeaderCell>
+                  <TableHeaderCell
+                    onClick={() => handleSort("status")}
+                    style={{ cursor: "pointer" }}
+                    sortable={true}
+                  >
                     <b>Status</b>
+                    {sortColumn === "status" && (
+                      <span>
+                        {sortDirection === "asc" ? (
+                          <ArrowUp16Filled />
+                        ) : (
+                          <ArrowDown16Filled />
+                        )}
+                      </span>
+                    )}
                   </TableHeaderCell>
                   <TableHeaderCell>
                     <b>Actions</b>
@@ -253,9 +303,9 @@ function TodoList({isTodoAdded, setIsTodoAdded, setTodosData, todosData}) {
           </>
         )}
       </div>
-      {/* <Toaster toasterId={toasterId} /> */}
     </div>
   );
+
 }
 
 export default TodoList;

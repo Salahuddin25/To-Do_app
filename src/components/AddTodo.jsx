@@ -73,7 +73,6 @@ function AddTodo(props) {
         
           <Field
             label="Title"
-            required
             validationMessage={
               formik.touched.title && formik.errors.title
                 ? formik.errors.title
