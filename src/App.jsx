@@ -7,11 +7,11 @@ import TodoDetails from "./components/TodoDetails";
 import TodoEdit from "./components/TodoEdit";
 import { initializeIcons } from "@fluentui/react/lib/Icons";
 import ErrorPage from "./components/ErrorPage";
+import TodoCard from "./components/TodoCard";
 
 initializeIcons();
 
 function App() {
-
   const [todosData, setTodosData] = useState([]);
   // const [isTodoAdded, setIsTodoAdded] = useState(false);
 
@@ -19,10 +19,33 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
-        <Route index path="/todos" element={<TodoList setTodosData={setTodosData} todosData={todosData} /*isTodoAdded={isTodoAdded} setIsTodoAdded={setIsTodoAdded}*/ />} />
-          <Route path="/todos/add" element={<AddTodo setTodosData={setTodosData} /* setIsTodoAdded={setIsTodoAdded} *//>} />
+          <Route index path="/" element={<TodoCard />} />
+          <Route
+            path="/todos"
+            element={
+              <TodoList
+                setTodosData={setTodosData}
+                todosData={
+                  todosData
+                } /*isTodoAdded={isTodoAdded} setIsTodoAdded={setIsTodoAdded}*/
+              />
+            }
+          />
+          <Route
+            path="/todos/add"
+            element={
+              <AddTodo
+                setTodosData={
+                  setTodosData
+                } /* setIsTodoAdded={setIsTodoAdded} */
+              />
+            }
+          />
           <Route path="/todos/:id/view" element={<TodoDetails />} />
-          <Route path="/todos/:todoId/edit" element={<TodoEdit setTodosData={setTodosData} />} />
+          <Route
+            path="/todos/:todoId/edit"
+            element={<TodoEdit setTodosData={setTodosData} />}
+          />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </div>

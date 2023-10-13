@@ -1,7 +1,6 @@
 {
   "name": "todos-app",
   "version": "0.1.0",
-  "homepage": "/todos",
   "private": true,
   "dependencies": {
     "@fluentui/react": "^8.112.1",

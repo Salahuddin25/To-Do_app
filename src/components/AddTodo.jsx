@@ -4,12 +4,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Dropdown } from "@fluentui/react";
 import { Radio, Button, Field, Input } from "@fluentui/react-components";
-import "./AddTodo.css";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "./Breadcrumbs";
 import "../App.css";
+import "./AddTodo.css";
 
-
+// Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   selectedUser: Yup.string().required("Please select a user"),
@@ -18,8 +18,8 @@ const validationSchema = Yup.object().shape({
 function AddTodo(props) {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  
 
+  // Fetch user data from an API
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
@@ -33,6 +33,7 @@ function AddTodo(props) {
       .catch((error) => console.error(error));
   }, []);
 
+  // Initialize Formik for form handling
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -47,13 +48,15 @@ function AddTodo(props) {
         completed: values.status === "Completed",
       };
       navigate("/todos");
+
+      // Send a POST request to add a new todo
       axios
         .post("https://jsonplaceholder.typicode.com/todos", newTodo)
         .then((response) => {
           console.log("Todo added:", response.data);
           props.setTodosData((data) => {
-            return [...data,newTodo];
-          })
+            return [...data, newTodo];
+          });
           navigate("/todos");
           props.setIsTodoAdded(true);
           formik.resetForm();
@@ -64,13 +67,12 @@ function AddTodo(props) {
 
   return (
     <div className="todo-form">
-    <div className="form-bread">
-      <Breadcrumbs />
+      <div className="form-bread">
+        <Breadcrumbs />
       </div>
       <hr className="horizontal-line"></hr>
       <form onSubmit={formik.handleSubmit} className="todo-form-body">
         <div>
-        
           <Field
             label="Title"
             validationMessage={
@@ -140,7 +142,7 @@ function AddTodo(props) {
             Save
           </Button>
           <Link to="/todos">
-          <Button>Cancel</Button>
+            <Button>Cancel</Button>
           </Link>
         </div>
       </form>

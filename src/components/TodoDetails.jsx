@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import "./TodoDetails.css";
 import { Button, Label, Spinner } from "@fluentui/react-components";
 import Breadcrumbs from "./Breadcrumbs";
+import "./TodoDetails.css";
 
 function TodoDetails() {
   const { id } = useParams();
   const [todo, setTodo] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
+  // Fetch todo and user data from APIs
   useEffect(() => {
     axios
       .get(`https://jsonplaceholder.typicode.com/todos/${id}`)
       .then((response) => {
         setTodo(response.data);
+
         axios
           .get(`https://jsonplaceholder.typicode.com/users/${response.data.userId}`)
           .then((userResponse) => {
@@ -29,28 +31,27 @@ function TodoDetails() {
           });
       })
       .catch((todoError) => {
-        setError("No Data Found ");
+        setError("No Data Found");
         setIsLoading(false);
       });
   }, [id]);
 
-
   return (
     <div className="todo-details">
-    <div className="detail-bread">
-      <Breadcrumbs />
+      <div className="detail-bread">
+        <Breadcrumbs />
       </div>
       <hr className="horizontal-line"></hr>
       {isLoading ? (
         <Spinner label="Loading..." />
       ) : error ? (
         <div className="error-message-view">
-        <img 
-        src="https://static.thenounproject.com/png/4440902-200.png" 
-        alt="No Data Found Icon"
-        className="error-image-view"
-      />
-        {error}
+          <img
+            src="https://static.thenounproject.com/png/4440902-200.png"
+            alt="No Data Found Icon"
+            className="error-image-view"
+          />
+          {error}
         </div>
       ) : (
         <div className="todo-details-body">
@@ -76,9 +77,9 @@ function TodoDetails() {
             </div>
           </div>
           <div className="view-btn">
-          <Link to="/todos">
-            <Button>Cancel</Button>
-          </Link>
+            <Link to="/todos">
+              <Button>Cancel</Button>
+            </Link>
           </div>
         </div>
       )}

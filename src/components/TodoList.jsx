@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Dropdown } from "@fluentui/react";
+import {
+  Dropdown,
+  MessageBar,
+  MessageBarType,
+  Text,
+} from "@fluentui/react";
 import {
   Button,
   Tooltip,
-} from "@fluentui/react-components";
-import {
   TableBody,
   TableCell,
   TableRow,
@@ -26,10 +29,15 @@ import {
   ArrowDown16Filled,
   ArrowUp16Filled,
 } from "@fluentui/react-icons";
-import "./TodoList.css";
 import Breadcrumbs from "./Breadcrumbs";
+import "./TodoList.css";
 
-function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
+function TodoList({
+  isTodoAdded,
+  setIsTodoAdded,
+  setTodosData,
+  todosData,
+}) {
   const [todos, setTodos] = useState([]);
   const [users, setUsers] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +47,14 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
   const [filter, setFilter] = useState(null);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  const showSuccessToastMessage = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => {
+      setShowSuccessToast(false);
+    }, 3000);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -92,6 +108,12 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
   const totalItems = filteredTodos?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+  useEffect(() => {
+    if (totalItems > 200) {
+      showSuccessToastMessage();
+    }
+  }, [totalItems]);
+
   const handlePageChange = (newPage) => {
     const maxPage = Math.ceil(filteredTodos.length / itemsPerPage);
     setCurrentPage(Math.min(Math.max(newPage, 1), maxPage));
@@ -111,7 +133,7 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
         <span>
           {startIndex + 1} to {endIndex} of {totalItems}
         </span>
-        <Tooltip content={"first page"}>
+        <Tooltip withArrow content={"first page"}>
           <Button
             icon={<ChevronDoubleLeft20Filled />}
             appearance="transparent"
@@ -119,7 +141,7 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
             onClick={handleFirstPage}
           />
         </Tooltip>
-        <Tooltip content={"previous page"}>
+        <Tooltip withArrow content={"previous page"}>
           <Button
             icon={<ChevronLeftFilled />}
             appearance="transparent"
@@ -127,7 +149,8 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
             onClick={() => handlePageChange(currentPage - 1)}
           />
         </Tooltip>
-        <Tooltip content={"next page"}>
+        <span>{currentPage}</span>
+        <Tooltip withArrow content={"next page"}>
           <Button
             icon={<ChevronRightFilled />}
             appearance="transparent"
@@ -135,7 +158,7 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
             onClick={() => handlePageChange(currentPage + 1)}
           />
         </Tooltip>
-        <Tooltip content={"last page"}>
+        <Tooltip withArrow content={"last page"}>
           <Button
             icon={<ChevronDoubleRight20Filled />}
             appearance="transparent"
@@ -192,12 +215,12 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
         <TableCell>{userName}</TableCell>
         <TableCell>{todo?.completed ? "Completed" : "Incomplete"}</TableCell>
         <TableCell>
-          <Tooltip content={"View"}>
+          <Tooltip withArrow content={"View"}>
             <Link to={`/todos/${todo?.id}/view`}>
               <Button icon={<EyeRegular />} appearance="subtle" />
             </Link>
           </Tooltip>
-          <Tooltip content={"Edit"}>
+          <Tooltip withArrow content={"Edit"}>
             <Link to={`/todos/${todo?.id}/edit`}>
               <Button icon={<EditRegular />} appearance="subtle" />
             </Link>
@@ -236,6 +259,16 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
         </div>
       </div>
       <hr></hr>
+      {showSuccessToast && (
+        <MessageBar
+          messageBarType={MessageBarType.success}
+          isMultiline={false}
+          onDismiss={() => setShowSuccessToast(false)}
+          dismissButtonAriaLabel="Close"
+        >
+          <Text variant="medium">Todo added successfully!</Text>
+        </MessageBar>
+      )}
       <div className="table-main">
         {isLoading ? (
           <Spinner label="Loading todos..." />
@@ -305,7 +338,6 @@ function TodoList({ isTodoAdded, setIsTodoAdded, setTodosData, todosData }) {
       </div>
     </div>
   );
-
 }
 
 export default TodoList;
