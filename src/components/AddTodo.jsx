@@ -9,7 +9,6 @@ import Breadcrumbs from "./Breadcrumbs";
 import "../App.css";
 import "./AddTodo.css";
 
-// Define validation schema using Yup
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   selectedUser: Yup.string().required("Please select a user"),
@@ -19,7 +18,6 @@ function AddTodo(props) {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch user data from an API
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
@@ -33,7 +31,6 @@ function AddTodo(props) {
       .catch((error) => console.error(error));
   }, []);
 
-  // Initialize Formik for form handling
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -49,7 +46,6 @@ function AddTodo(props) {
       };
       navigate("/todos");
 
-      // Send a POST request to add a new todo
       axios
         .post("https://jsonplaceholder.typicode.com/todos", newTodo)
         .then((response) => {
@@ -58,7 +54,6 @@ function AddTodo(props) {
             return [...data, newTodo];
           });
           navigate("/todos");
-          props.setIsTodoAdded(true);
           formik.resetForm();
         })
         .catch((error) => console.error(error));

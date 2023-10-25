@@ -14,7 +14,7 @@ import "./TodoCard.css"
 function TodoCard() {
   return (
     <div className="card-container">
-      <Card appearance="outline">
+      <Card>
         <CardHeader header={<b>To-Do List</b>}></CardHeader>
         <CardPreview>
           <img

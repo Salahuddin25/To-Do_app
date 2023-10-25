@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import {
-  Dropdown,
-  MessageBar,
-  MessageBarType,
-  Text,
-} from "@fluentui/react";
+import { Dropdown, MessageBar, MessageBarType, Text } from "@fluentui/react";
 import {
   Button,
   Tooltip,
@@ -32,12 +27,7 @@ import {
 import Breadcrumbs from "./Breadcrumbs";
 import "./TodoList.css";
 
-function TodoList({
-  isTodoAdded,
-  setIsTodoAdded,
-  setTodosData,
-  todosData,
-}) {
+function TodoList({ setTodosData, todosData }) {
   const [todos, setTodos] = useState([]);
   const [users, setUsers] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,37 +37,39 @@ function TodoList({
   const [filter, setFilter] = useState(null);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showSuccessBar, setShowSuccessBar] = useState(false);
 
-  const showSuccessToastMessage = () => {
-    setShowSuccessToast(true);
+  const showSuccessBarMessage = () => {
+    setShowSuccessBar(true);
     setTimeout(() => {
-      setShowSuccessToast(false);
+      setShowSuccessBar(false);
     }, 3000);
   };
 
   useEffect(() => {
     setIsLoading(true);
 
-    axios
-      .get("https://jsonplaceholder.typicode.com/todos")
-      .then((response) => {
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get(
+          "https://jsonplaceholder.typicode.com/todos"
+        );
         setTodos(response?.data);
         setTodosData(response?.data);
         setTimeout(() => {
           setIsLoading(false);
         }, loadingDuration);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, loadingDuration);
-      });
+        setIsLoading(false);
+      }
+    };
 
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "https://jsonplaceholder.typicode.com/users"
+        );
         const usersData = {};
         response?.data?.forEach((user) => {
           usersData[user?.id] = user?.name;
@@ -86,14 +78,15 @@ function TodoList({
         setTimeout(() => {
           setIsLoading(false);
         }, loadingDuration);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, loadingDuration);
-      });
-  }, [setTodosData, isTodoAdded, setIsTodoAdded]);
+        setIsLoading(false);
+      }
+    };
+
+    fetchTodos();
+    fetchUsers();
+  }, [setTodosData]);
 
   const filteredTodos = todosData.filter((todo) => {
     if (!filter || filter === "all") {
@@ -103,6 +96,7 @@ function TodoList({
     } else if (filter === "incomplete") {
       return !todo.completed;
     }
+    return true;
   });
 
   const totalItems = filteredTodos?.length;
@@ -110,7 +104,7 @@ function TodoList({
 
   useEffect(() => {
     if (totalItems > 200) {
-      showSuccessToastMessage();
+      showSuccessBarMessage();
     }
   }, [totalItems]);
 
@@ -259,11 +253,11 @@ function TodoList({
         </div>
       </div>
       <hr></hr>
-      {showSuccessToast && (
+      {showSuccessBar && (
         <MessageBar
           messageBarType={MessageBarType.success}
           isMultiline={false}
-          onDismiss={() => setShowSuccessToast(false)}
+          onDismiss={() => setShowSuccessBar(false)}
           dismissButtonAriaLabel="Close"
         >
           <Text variant="medium">Todo added successfully!</Text>

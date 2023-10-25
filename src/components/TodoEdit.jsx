@@ -10,48 +10,52 @@ function TodoEdit(props) {
   const navigate = useNavigate();
   const [todo, setTodo] = useState({ title: '', completed: false, userId: null });
   const [user, setUser] = useState(null);
-  const [status, setStatus] = useState(''); 
+  const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch todo data from an API
   useEffect(() => {
-    axios
-      .get(`https://jsonplaceholder.typicode.com/todos/${todoId}`)
-      .then((response) => {
+    const fetchTodo = async () => {
+      try {
+        const response = await axios.get(`https://jsonplaceholder.typicode.com/todos/${todoId}`);
         setTodo(response.data);
         setLoading(false);
-      })
-      .catch((todoError) => {
-        setError("No Data Found");
+      } catch (todoError) {
+        setError("No Data Found!");
         setLoading(false);
-      });
+      }
+    };
+
+    fetchTodo();
+
   }, [todoId]);
-  
-  // Fetch user data based on todo's userId
+
   useEffect(() => {
+    const fetchUser = async (userId) => {
+      try {
+        const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`);
+        setUser(response.data);
+      } catch (userError) {
+        setError("No Data Found!");
+        setLoading(false);
+      }
+    };
+
     if (todo.userId) {
-      axios
-        .get(`https://jsonplaceholder.typicode.com/users/${todo.userId}`)
-        .then((response) => setUser(response.data))
-        .catch((todoError) => {
-          setError("No Data Found");
-          setLoading(false);
-        });
+      fetchUser(todo.userId);
     }
+
   }, [todo.userId]);
 
-  // Update the status based on completed property
   useEffect(() => {
     setStatus(todo.completed ? 'completed' : 'incomplete');
-    setLoading(false);
   }, [todo.completed]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === 'status') {
-      setStatus(value); 
+      setStatus(value);
       setTodo({
         ...todo,
         completed: value === 'completed',
@@ -66,14 +70,13 @@ function TodoEdit(props) {
 
   const handleSave = () => {
     navigate("/todos");
-    axios
-      .put(`https://jsonplaceholder.typicode.com/todos/${todoId}`, todo)
+    axios.put(`https://jsonplaceholder.typicode.com/todos/${todoId}`, todo)
       .then(() => {
-        console.log('Edited Todo Details:', todo); 
+        console.log('Edited Todo Details:', todo);
         props.setTodosData((data) => {
           return [...data, todo]
         });
-        navigate("/todos"); 
+        navigate("/todos");
       })
       .catch((error) => console.error(error));
   };
@@ -88,8 +91,8 @@ function TodoEdit(props) {
         <Spinner label="Loading..." />
       ) : error ? (
         <div className="error-message-edit">
-          <img 
-            src="https://static.thenounproject.com/png/4440902-200.png" 
+          <img
+            src="https://static.thenounproject.com/png/4440902-200.png"
             alt="No Data Found Icon"
             className="error-image-edit"
           />

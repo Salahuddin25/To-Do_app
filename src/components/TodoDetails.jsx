@@ -12,28 +12,34 @@ function TodoDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch todo and user data from APIs
   useEffect(() => {
-    axios
-      .get(`https://jsonplaceholder.typicode.com/todos/${id}`)
-      .then((response) => {
-        setTodo(response.data);
+    const fetchTodo = () => {
+      axios
+        .get(`https://jsonplaceholder.typicode.com/todos/${id}`)
+        .then((response) => {
+          setTodo(response.data);
+          fetchUser(response.data.userId);
+        })
+        .catch((todoError) => {
+          setError("No Data Found!");
+          setIsLoading(false);
+        });
+    };
 
-        axios
-          .get(`https://jsonplaceholder.typicode.com/users/${response.data.userId}`)
-          .then((userResponse) => {
-            setUser(userResponse.data);
-            setIsLoading(false);
-          })
-          .catch((userError) => {
-            setError("User not found");
-            setIsLoading(false);
-          });
-      })
-      .catch((todoError) => {
-        setError("No Data Found");
-        setIsLoading(false);
-      });
+    const fetchUser = (userId) => {
+      axios
+        .get(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then((userResponse) => {
+          setUser(userResponse.data);
+          setIsLoading(false);
+        })
+        .catch((userError) => {
+          setError("No Data Found!");
+          setIsLoading(false);
+        });
+    };
+
+    fetchTodo();
   }, [id]);
 
   return (
@@ -68,11 +74,11 @@ function TodoDetails() {
             <div className="user">
               <div>
                 <Label>Name</Label>
-                <p> {user.name}</p>
+                <p>{user.name}</p>
               </div>
               <div>
                 <Label>Email</Label>
-                <p> {user.email}</p>
+                <p>{user.email}</p>
               </div>
             </div>
           </div>
