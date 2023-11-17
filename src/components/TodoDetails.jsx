@@ -12,35 +12,61 @@ function TodoDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchTodo = () => {
+  //     axios
+  //       .get(`https://jsonplaceholder.typicode.com/todos/${id}`)
+  //       .then((response) => {
+  //         setTodo(response.data);
+  //         fetchUser(response.data.userId);
+  //       })
+  //       .catch((todoError) => {
+  //         setError("No Data Found!");
+  //         setIsLoading(false);
+  //       });
+  //   };
+
+  //   const fetchUser = (userId) => {
+  //     axios
+  //       .get(`https://jsonplaceholder.typicode.com/users/${userId}`)
+  //       .then((userResponse) => {
+  //         setUser(userResponse.data);
+  //         setIsLoading(false);
+  //       })
+  //       .catch((userError) => {
+  //         setError("No Data Found!");
+  //         setIsLoading(false);
+  //       });
+  //   };
+
+  //   fetchTodo();
+  // }, [id]);
+
   useEffect(() => {
-    const fetchTodo = () => {
-      axios
-        .get(`https://jsonplaceholder.typicode.com/todos/${id}`)
-        .then((response) => {
-          setTodo(response.data);
-          fetchUser(response.data.userId);
-        })
-        .catch((todoError) => {
-          setError("No Data Found!");
-          setIsLoading(false);
-        });
-    };
-
-    const fetchUser = (userId) => {
-      axios
-        .get(`https://jsonplaceholder.typicode.com/users/${userId}`)
-        .then((userResponse) => {
-          setUser(userResponse.data);
-          setIsLoading(false);
-        })
-        .catch((userError) => {
-          setError("No Data Found!");
-          setIsLoading(false);
-        });
-    };
-
-    fetchTodo();
+    const localTodos = JSON.parse(localStorage.getItem('todos')) || [];
+    const todoDetails = localTodos.find(todo => todo.id === parseInt(id));
+  
+    if (todoDetails) {
+      setTodo(todoDetails);
+      fetchUser(todoDetails.userId);
+    } else {
+      setError("No Data Found!");
+      setIsLoading(false);
+    }
   }, [id]);
+  
+  const fetchUser = (userId) => {
+    axios
+      .get(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then((userResponse) => {
+        setUser(userResponse.data);
+        setIsLoading(false);
+      })
+      .catch((userError) => {
+        setError("User data not found!");
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div className="todo-details">

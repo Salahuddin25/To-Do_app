@@ -27,13 +27,12 @@ import {
 import Breadcrumbs from "./Breadcrumbs";
 import "./TodoList.css";
 
-function TodoList({ setTodosData, todosData }) {
-  const [todos, setTodos] = useState([]);
-  const [users, setUsers] = useState({});
+function TodoList({ setTodosData, users, todosData, newTodoAdded }) {
+  // const [users, setUsers] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [isLoading, setIsLoading] = useState(true);
-  const loadingDuration = 1300;
+  const loadingDuration = 800;
   const [filter, setFilter] = useState(null);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
@@ -43,50 +42,29 @@ function TodoList({ setTodosData, todosData }) {
     setShowSuccessBar(true);
     setTimeout(() => {
       setShowSuccessBar(false);
-    }, 3000);
+    }, 2400);
   };
 
   useEffect(() => {
-    setIsLoading(true);
+    const fetchData = async () => {
+      setIsLoading(true);
 
-    const fetchTodos = async () => {
-      try {
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/todos"
-        );
-        setTodos(response?.data);
-        setTodosData(response?.data);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, loadingDuration);
-      } catch (error) {
-        console.error(error);
-        setIsLoading(false);
+      if (todosData.length === 0) {
+        try {
+          const todosResponse = await axios.get("https://jsonplaceholder.typicode.com/todos");
+          setTodosData(todosResponse?.data);
+        } catch (error) {
+          console.error("Error fetching data", error);
+        }
       }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/users"
-        );
-        const usersData = {};
-        response?.data?.forEach((user) => {
-          usersData[user?.id] = user?.name;
-        });
-        setUsers(usersData);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, loadingDuration);
-      } catch (error) {
-        console.error(error);
+  
+      setTimeout(() => {
         setIsLoading(false);
-      }
+      }, loadingDuration);
     };
-
-    fetchTodos();
-    fetchUsers();
-  }, [setTodosData]);
+  
+    fetchData();
+  }, []);
 
   const filteredTodos = todosData.filter((todo) => {
     if (!filter || filter === "all") {
@@ -103,10 +81,10 @@ function TodoList({ setTodosData, todosData }) {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   useEffect(() => {
-    if (totalItems > 200) {
+    if (newTodoAdded) {
       showSuccessBarMessage();
     }
-  }, [totalItems]);
+  }, [newTodoAdded]);
 
   const handlePageChange = (newPage) => {
     const maxPage = Math.ceil(filteredTodos.length / itemsPerPage);

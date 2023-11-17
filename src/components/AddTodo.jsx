@@ -15,21 +15,12 @@ const validationSchema = Yup.object().shape({
 });
 
 function AddTodo(props) {
-  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
-        const userOptions = response.data.map((user) => ({
-          key: user?.id?.toString(),
-          text: user.name,
-        }));
-        setUsers(userOptions);
-      })
-      .catch((error) => console.error(error));
-  }, []);
+  const userOptions = Object.entries(props.users).map(([key, value]) => ({
+    key: key.toString(),
+    text: value,
+  }));
 
   const formik = useFormik({
     initialValues: {
@@ -46,15 +37,27 @@ function AddTodo(props) {
       };
       navigate("/todos");
 
-      axios
-        .post("https://jsonplaceholder.typicode.com/todos", newTodo)
+      axios.post("https://jsonplaceholder.typicode.com/todos", newTodo)
         .then((response) => {
           console.log("Todo added:", response.data);
-          props.setTodosData((data) => {
-            return [...data, newTodo];
-          });
+          const addedTodo = {
+            ...response.data,
+            id: props.todosData.length + 1
+          };
+          props.setTodosData(prevTodos => [...prevTodos, addedTodo]);
+          if (!props.users[response.data.userId]) {
+            axios.get(`https://jsonplaceholder.typicode.com/users/${response.data.userId}`)
+              .then(userResponse => {
+                props.setUsers(prevUsers => ({
+                  ...prevUsers,
+                  [userResponse.data.id]: userResponse.data.name
+                }));
+              })
+              .catch(error => console.error(error));
+          }
           navigate("/todos");
           formik.resetForm();
+          props.onNewTodoAdded();
         })
         .catch((error) => console.error(error));
     },
@@ -114,7 +117,7 @@ function AddTodo(props) {
               placeholder="Select a user"
               selectedKey={formik.values.selectedUser}
               required
-              options={users}
+              options={userOptions}
               onChange={(_, option) =>
                 formik.setFieldValue("selectedUser", option.key.toString())
               }
