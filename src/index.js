@@ -2,20 +2,27 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
+
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import reportWebVitals from "./reportWebVitals";
 // import '@fluentui/react/dist/css/styles.css';
 
+import { PublicClientApplication } from "@azure/msal-browser";
+import { MsalProvider } from "@azure/msal-react";
+import { msalConfig } from "./authConfig";
+
+// import "bootstrap/dist/css/bootstrap.min.css";
+
+const msalInstance = new PublicClientApplication(msalConfig);
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <FluentProvider theme={webLightTheme}>
+    <FluentProvider theme={webLightTheme}>
+      <MsalProvider instance={msalInstance}>
         <App />
-      </FluentProvider>
-    </Provider>
+      </MsalProvider>
+    </FluentProvider>
   </React.StrictMode>
 );
 

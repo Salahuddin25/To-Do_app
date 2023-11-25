@@ -1,8 +1,12 @@
 {
   "name": "todos-app",
   "version": "0.1.0",
+  "homepage": "/signin",
   "private": true,
   "dependencies": {
+    "@azure/msal-browser": "^3.5.0",
+    "@azure/msal-common": "^14.4.0",
+    "@azure/msal-react": "^2.0.7",
     "@fluentui/react": "^8.112.1",
     "@fluentui/react-breadcrumb-preview": "^1.2.0",
     "@fluentui/react-components": "^9.32.3",

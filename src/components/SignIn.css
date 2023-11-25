@@ -1,0 +1,42 @@
+.signin-card {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+  text-align: center;
+  color: #323130;
+  background-color: #f3f2f1;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signin-icon {
+  display: flex;
+  background-color: #edebe9;
+  height: 100px;
+  align-items: center;
+  padding: 20px;
+  width: 360px;
+  margin: 5px 20px;
+}
+
+.svg {
+  background-color: white;
+  height: 38px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.button-sign button {
+  background-color: #055d84;
+  color: white;
+}
+
+.button-sign button:hover {
+  background-color: #04415c;
+  color: white;
+}
