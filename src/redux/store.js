@@ -1,9 +1,12 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import thunk from 'redux-thunk';
-import { todosReducer } from './reducers/todoReducer';
+import { configureStore } from '@reduxjs/toolkit';
+import profileReducer from '../app/pages/profile/actions/profile-slice';
+import { todoApi } from '../app/pages/todos/components/todoapi';
 
-const rootReducer = combineReducers({
-  todos: todosReducer
+export const store = configureStore({
+  reducer: {
+    profile: profileReducer,
+    [todoApi.reducerPath]: todoApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(todoApi.middleware),
 });
-
-export const store = createStore(rootReducer, applyMiddleware(thunk));

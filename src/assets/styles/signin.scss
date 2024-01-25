@@ -1,0 +1,67 @@
+@import 'variables';
+
+.signin-card {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+  text-align: center;
+  background-color: $app-bg-color;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardhead {
+  font-size: 28px;
+  color: $ensar-blue;
+  padding-left: 20px;
+  margin-bottom: -18px;
+  margin-top: -5px;
+}
+
+.signin-icon {
+  display: flex;
+  background-color: #edebe9;
+  height: 100px;
+  align-items: center;
+  padding: 20px;
+  width: 360px;
+  margin: 5px 20px;
+}
+
+.svg {
+  background-color: $primary-color;
+  height: 38px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  svg {
+    height: 17px;
+    width: 22px;
+  }
+}
+
+.signin-text {
+  padding-left: 10px;
+  font-size: 17px;
+  text-align: left;
+}
+
+.button-sign {
+  padding-left: 20px;
+  margin-bottom: 20px;
+  margin-top: 5px;
+
+  button {
+    background-color: $ensar-blue;
+    color: $primary-color;
+  }
+  button:hover {
+    background-color: #055070;
+    color: $primary-color;
+  }
+}

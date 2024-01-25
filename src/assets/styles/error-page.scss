@@ -1,0 +1,26 @@
+@import 'variables';
+
+.error-container {
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 540px;
+}
+
+.error-heading {
+  font-size: 36px;
+  color: $ensar-blue;
+}
+
+.error-message {
+  font-size: 18px;
+  margin-top: 10px;
+  color: $text-color;
+}
+
+.error-image {
+  width: 100px;
+}

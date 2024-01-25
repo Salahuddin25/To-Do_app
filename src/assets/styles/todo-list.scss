@@ -1,0 +1,47 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-bread {
+  margin: 0px 0px 0px 10px;
+}
+
+.btn {
+  display: flex;
+  margin: 10px 10px 0px 0px;
+
+  button {
+    margin-left: 10px;
+  }
+}
+
+.table {
+  hr {
+    margin-top: 12px;
+  }
+} 
+
+.dropdown-filter {
+  width: 110px;
+}
+
+.table-main {
+  margin: 10px;
+}
+
+.tab-head {
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+
+  span {
+    margin-right: 20px;
+  }
+}

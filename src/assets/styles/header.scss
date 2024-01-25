@@ -1,0 +1,30 @@
+@import 'variables';
+
+.header {
+  display: flex;
+  background-color: $primary-color;
+  justify-content: flex-end;
+  padding: 10px 5px;
+  height: 55px;
+}
+
+.profile-box {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 2px solid $border-color;
+
+  p {
+    margin: 0;
+  }
+}
+
+
+
+.profilename {
+  margin-left: 10px;
+}
+
+.avatar:hover {
+  cursor: pointer;
+}
